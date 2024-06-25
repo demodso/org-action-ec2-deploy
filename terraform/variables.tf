@@ -25,3 +25,13 @@ variable "instance_name" {
   type        = string
   default     = "Demo Instance"
 }
+
+variable "subnet_id" {
+  description = "ID of the subnet where the EC2 instance will be deployed"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "ID of the VPC where the EC2 instance will be deployed"
+  type        = string
+}

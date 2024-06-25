@@ -1,0 +1,19 @@
+name: Test EC2 Deployment Action
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy EC2 Instance
+        uses: ./
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "us-west-2"
+          ami_id: "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI ID
+          instance_type: "t2.micro"
+          key_name: "your-key-pair-name"
+          instance_name: "Test Instance"

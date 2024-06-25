@@ -1,0 +1,58 @@
+name: 'Deploy EC2 Instance'
+description: 'Deploy an EC2 instance using Terraform'
+inputs:
+  aws_access_key_id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Secret Access Key'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: true
+    default: 'us-west-2'
+  ami_id:
+    description: 'AMI ID for the EC2 instance'
+    required: true
+  instance_type:
+    description: 'Instance type for the EC2 instance'
+    required: true
+    default: 't2.micro'
+  key_name:
+    description: 'Name of the SSH key pair'
+    required: true
+  instance_name:
+    description: 'Name tag for the EC2 instance'
+    required: true
+    default: 'Demo Instance'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - uses: hashicorp/setup-terraform@v1
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform
+      shell: bash
+    - name: Terraform Apply
+      run: |
+        terraform apply -auto-approve \
+          -var="aws_region=${{ inputs.aws_region }}" \
+          -var="ami_id=${{ inputs.ami_id }}" \
+          -var="instance_type=${{ inputs.instance_type }}" \
+          -var="key_name=${{ inputs.key_name }}" \
+          -var="instance_name=${{ inputs.instance_name }}"
+      working-directory: ./terraform
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+
+outputs:
+  instance_id:
+    description: "ID of the created EC2 instance"
+    value: ${{ steps.terraform-output.outputs.instance_id }}
+  instance_public_ip:
+    description: "Public IP of the created EC2 instance"
+    value: ${{ steps.terraform-output.outputs.instance_public_ip }}
